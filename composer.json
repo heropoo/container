@@ -1,0 +1,23 @@
+{
+  "name": "heropoo/container",
+  "description": "Container",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Heropoo",
+      "email": "aiyouyou1000@163.com"
+    }
+  ],
+  "keywords": [
+    "container"
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Moon\\Container\\": ""
+    }
+  }
+}

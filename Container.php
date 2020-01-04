@@ -12,6 +12,16 @@ class Container
     protected $bindings = [];
     protected $instances = [];
 
+    public function add($name, $object)
+    {
+        $this->instance($name, $object);
+    }
+
+    public function get($name)
+    {
+        return $this->make($name);
+    }
+
     /**
      * Bind to Container
      * @param string $name

@@ -17,9 +17,9 @@ class Container
         $this->instance($name, $object);
     }
 
-    public function get($name)
+    public function get($name, $force = false)
     {
-        return $this->make($name);
+        return $this->make($name, $force);
     }
 
     /**

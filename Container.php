@@ -77,24 +77,26 @@ class Container
 
     /**
      * @param string $function
+     * @param array $params
      * @return mixed
      */
-    public function callFunction($function)
+    public function callFunction($function, $params = [])
     {
         $reflectionFunction = new \ReflectionFunction($function);
-        $args = $this->getDependencies($reflectionFunction->getParameters());
+        $args = $this->getDependencies($reflectionFunction->getParameters(), $params);
         return $reflectionFunction->invokeArgs($args);
     }
 
     /**
      * @param string $class
      * @param string $method
+     * @param array $params
      * @return mixed
      */
-    public function callMethod($class, $method)
+    public function callMethod($class, $method, $params = [])
     {
         $reflectionMethod = new \ReflectionMethod($class, $method);
-        $args = $this->getDependencies($reflectionMethod->getParameters());
+        $args = $this->getDependencies($reflectionMethod->getParameters(), $params);
         return $reflectionMethod->invokeArgs($this->build($class), $args);
     }
 
@@ -126,16 +128,20 @@ class Container
         return $ref->newInstanceArgs($dependencies);
     }
 
-    protected function getDependencies($parameters)
+    protected function getDependencies($parameters, $nonClassParams = [])
     {
         $dependencies = [];
         foreach ($parameters as $parameter) {
             /** @var \ReflectionParameter $parameter */
             $dependency = $parameter->getClass();
             if (is_null($dependency)) {
-                $dependencies[] = $this->resolveNonClass($parameter);
+                if(isset($nonClassParams[$parameter->getName()])){
+                    $dependencies[] = $nonClassParams[$parameter->getName()];
+                }else{
+                    $dependencies[] = $this->resolveNonClass($parameter);
+                }
             } else {
-                $dependencies[] = $this->build($parameter->getName());
+                $dependencies[] = $this->build($dependency->getName());
             }
         }
         return $dependencies;
@@ -146,6 +152,12 @@ class Container
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
-        throw new Exception("Constructor parameter '\${$parameter->getName()}' for class '{$parameter->getDeclaringClass()->getName()}' does not has a default value.");
+        if ($parameter->getDeclaringClass()) {
+            $msg = "Constructor parameter '\${$parameter->getName()}' for'
+            .' class '{$parameter->getDeclaringClass()->getName()}' does not has a default value.";
+        } else {
+            $msg = "Closure parameter '\${$parameter->getName()} does not has a default value.";
+        }
+        throw new Exception($msg);
     }
 }

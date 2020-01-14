@@ -135,13 +135,17 @@ class Container
             /** @var \ReflectionParameter $parameter */
             $dependency = $parameter->getClass();
             if (is_null($dependency)) {
-                if(isset($nonClassParams[$parameter->getName()])){
+                if (isset($nonClassParams[$parameter->getName()])) {
                     $dependencies[] = $nonClassParams[$parameter->getName()];
-                }else{
+                } else {
                     $dependencies[] = $this->resolveNonClass($parameter);
                 }
             } else {
-                $dependencies[] = $this->build($dependency->getName());
+                if (isset($this->instances[$dependency->getName()])) {
+                    $dependencies[] = $this->instances[$dependency->getName()];
+                } else {
+                    $dependencies[] = $this->build($dependency->getName());
+                }
             }
         }
         return $dependencies;

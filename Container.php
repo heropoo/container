@@ -15,6 +15,9 @@ class Container
 
     public function add($name, $object)
     {
+        if ($name !== get_class($object)) {
+            $this->alias(get_class($object), $name);
+        }
         $this->instance($name, $object);
     }
 

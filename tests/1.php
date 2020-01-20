@@ -11,10 +11,10 @@ $container->single(C::class, function (Container $container) {
 });
 $container->alias('a', 'Aaa');
 
-$a = $container->make('a');
-var_dump($a);
+$a = $container->make('a', true);
+//var_dump($a);
 
-//var_dump($container);
+var_dump($container);
 
 class Aaa
 {

@@ -36,7 +36,7 @@ class Container
      */
     public function bind($name, Closure $closure, $single = false)
     {
-        $this->bindings[$name] = compact('closure', $single);
+        $this->bindings[$name] = compact('closure', 'single');
     }
 
     /**

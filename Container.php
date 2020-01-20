@@ -11,26 +11,32 @@ class Container
 {
     protected $bindings = [];
     protected $instances = [];
+    protected $aliases = [];
 
     public function add($name, $object)
     {
         $this->instance($name, $object);
     }
 
-    public function get($name, $force = false)
+    public function get($name, $single = false)
     {
-        return $this->make($name, $force);
+        return $this->make($name, $single);
+    }
+
+    public function alias($alias, $name)
+    {
+        $this->aliases[$alias] = $name;
     }
 
     /**
      * Bind to Container
      * @param string $name
      * @param Closure $closure
-     * @param bool $force Bind as Single Instance
+     * @param bool $single Bind as Single Instance
      */
-    public function bind($name, Closure $closure, $force = false)
+    public function bind($name, Closure $closure, $single = false)
     {
-        $this->bindings[$name] = compact('closure', $force);
+        $this->bindings[$name] = compact('closure', $single);
     }
 
     /**
@@ -56,12 +62,16 @@ class Container
     /**
      * Make or get a instance
      * @param string $name
-     * @param bool $force
+     * @param bool $single
      * @return Object
      * @throws Exception
      */
-    public function make($name, $force = false)
+    public function make($name, $single = false)
     {
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+        }
+
         if (isset($this->instances[$name])) {
             return $this->instances[$name];
         }
@@ -69,9 +79,10 @@ class Container
         $closure = $this->getClosure($name);
         $object = $this->build($closure);
 
-        if (isset($this->bindings[$name]['force']) && $this->bindings[$name]['force'] || $force) {
+        if (isset($this->bindings[$name]['single']) && $this->bindings[$name]['single'] || $single) {
             $this->instances[$name] = $object;
         }
+
         return $object;
     }
 
@@ -141,11 +152,7 @@ class Container
                     $dependencies[] = $this->resolveNonClass($parameter);
                 }
             } else {
-                if (isset($this->instances[$dependency->getName()])) {
-                    $dependencies[] = $this->instances[$dependency->getName()];
-                } else {
-                    $dependencies[] = $this->build($dependency->getName());
-                }
+                $dependencies[] = $this->make($dependency->getName());
             }
         }
         return $dependencies;

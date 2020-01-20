@@ -4,12 +4,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Moon\Container\Container;
 
 $container = new Container();
-$container->single('a', function (Container $container){
+$container->single(A::class, function (Container $container) {
     return $container->make(A::class, true);
 });
 
 $a = $container->make('a');
 var_dump($a);
+
 //var_dump($container);
 
 class A

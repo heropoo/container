@@ -166,9 +166,9 @@ class Container
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
+        //todo fix error msg
         if ($parameter->getDeclaringClass()) {
-            $msg = "Constructor parameter '\${$parameter->getName()}' for'
-            .' class '{$parameter->getDeclaringClass()->getName()}' does not has a default value.";
+            $msg = "Constructor parameter '\${$parameter->getName()}' for class '{$parameter->getDeclaringClass()->getName()}' does not has a default value.";
         } else {
             $msg = "Closure parameter '\${$parameter->getName()} does not has a default value.";
         }

@@ -157,7 +157,7 @@ class Container
         $dependencies = [];
         foreach ($parameters as $parameter) {
             /** @var \ReflectionParameter $parameter */
-            $dependency = $parameter->getClass();
+            $dependency = method_exists($parameter, 'getType') ? $parameter->getType() :  $parameter->getClass();
             if (is_null($dependency)) {
                 if (isset($nonClassParams[$parameter->getName()])) {
                     $dependencies[] = $nonClassParams[$parameter->getName()];
